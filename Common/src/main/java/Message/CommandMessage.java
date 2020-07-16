@@ -3,6 +3,7 @@ package Message;
 import java.io.File;
 
 public class CommandMessage extends Message{
+
     public enum Command {
         DELETE,
         DOWNLOAD,

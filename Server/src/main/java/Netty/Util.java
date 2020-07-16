@@ -10,7 +10,8 @@ public class Util {
         FileListMessage fm = new FileListMessage(Paths.get(getUserPath(login)));
         channel.writeAndFlush(fm);
     }
+
     public static String getUserPath(String login) {
-        return "_cloud_repository/" + login + "/";
+        return "cloud_repository/" + login + "/";
     }
 }

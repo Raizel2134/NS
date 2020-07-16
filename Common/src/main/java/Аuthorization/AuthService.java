@@ -1,17 +1,11 @@
 package Аuthorization;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.security.MessageDigest;
 import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
 
 public class AuthService implements Auth {
-
-    private String URL = "jdbc:mysql://localhost:3306/storage?serverTimezone=UTC&useSSL=false";
-    private static final String LOGIN = "student";
-    private static final String PASS = "student";
+    private String URL = "jdbc:mysql://localhost:3306/storage?useSSL=false&serverTimezone=UTC";
     private Connection connection;
     private List<PreparedStatement> preparedStatements;
     private PreparedStatement authQuery;
@@ -23,31 +17,15 @@ public class AuthService implements Auth {
 
     public synchronized void start() {
         try {
-            this.connection = DriverManager.getConnection(URL,LOGIN,PASS);
+            Class.forName("com.mysql.jdbc.Driver");
+            this.connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/storage?useSSL=false&serverTimezone=UTC","student","student");
             prepareStatements();
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
 
     public AuthService(){}
-
-    private synchronized void testPrefill() throws AuthServiceException {
-        String [] [] testUsers = {
-                {"login_1",  "pass_1"},
-                {"login_2",  "pass_2"},
-                {"login_3",  "pass_3"}};
-        try {
-            MessageDigest digest = MessageDigest.getInstance("MD5");
-            for (int i = 0; i < 3; i++) {
-                digest.update(testUsers[i][1].getBytes());
-                if(Files.notExists(Paths.get(URL).getParent().resolve(testUsers[i][0])))
-                    Files.createDirectory(Paths.get(URL).getParent().resolve(testUsers[i][0]));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     private void prepareStatements () throws SQLException {
         preparedStatements = new LinkedList<>();

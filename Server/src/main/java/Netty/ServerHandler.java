@@ -41,13 +41,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 if (msg instanceof AuthMessage) {
                     String login = ((AuthMessage) msg).getLogin();
                     String password = ((AuthMessage) msg).getPassword();
-                    Path path = Paths.get("_cloud_repository", login);
+                    Path path = Paths.get("cloud_repository", login);
                     if (AUTH_SERVICE.isLoginAccepted(login, password)) {
-                        // Проверяем, на месте ли папка с файлами пользователя
                         if (Files.isDirectory(SERVER_DIRECTORY.resolve(login), LinkOption.NOFOLLOW_LINKS)) {
                             currentDirectory = SERVER_DIRECTORY.resolve(login);
                         } else {
-                            // Если папки нет, то создать
                             Files.createDirectory(path);
                         }
 
@@ -80,11 +78,13 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                     Util.sendFileList(ctx.channel(), login);
                 }
                 if (msg instanceof CommandMessage) {
-                    Logger.getGlobal().info("Processing command: " + ((CommandMessage) msg).getCommand()); // временно, для тестирования
+                    Logger.getGlobal().info("Processing command: " + ((CommandMessage) msg).getCommand());
                     switch (((CommandMessage) msg).getCommand()) {
                         case DELETE:
-                            Path path = Paths.get(((CommandMessage) msg).getAddition());
-                            Files.delete(path);
+                            Path pathFile = Paths.get(((CommandMessage) msg).getAddition());
+                            Path path = Paths.get(SERVER_DIRECTORY + "/" + login + "/");
+                            System.out.println(Paths.get(path.toString() + "/" +  pathFile.getFileName()));
+                            Files.delete(Paths.get(path.toString() + "/" + pathFile.getFileName()));
                             Util.sendFileList(ctx.channel(), login);
                             break;
                         case LIST_FILES:
@@ -130,12 +130,12 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+    public void channelReadComplete(ChannelHandlerContext ctx) {
         ctx.flush();
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         cause.printStackTrace();
         isAuth = false;
         ctx.flush();
