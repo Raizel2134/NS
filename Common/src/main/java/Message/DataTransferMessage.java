@@ -1,10 +1,9 @@
 package Message;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class DataTransferMessage extends Message{
+public class DataTransferMessage extends Message {
     private String fileName;
     private String path;
     private byte[] data;
@@ -15,7 +14,7 @@ public class DataTransferMessage extends Message{
         this.fileName = path.getFileName().toString();
         try {
             this.data = Files.readAllBytes(path);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         this.size = data.length;

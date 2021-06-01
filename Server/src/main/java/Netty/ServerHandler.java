@@ -57,8 +57,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
                         Util.sendFileList(ctx.channel(), login);
                     } else {
-                        ctx.write(new ResultMessage(ResultMessage.Result.FAILED));
-                        ctx.flush();
+                        ctx.writeAndFlush(ResultMessage.Result.FAILED);
                     }
                 }
             } else {
@@ -83,7 +82,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                         case DELETE:
                             Path pathFile = Paths.get(((CommandMessage) msg).getAddition());
                             Path path = Paths.get(SERVER_DIRECTORY + "/" + login + "/");
-                            System.out.println(Paths.get(path.toString() + "/" +  pathFile.getFileName()));
+                            System.out.println(Paths.get(path.toString() + "/" + pathFile.getFileName()));
                             Files.delete(Paths.get(path.toString() + "/" + pathFile.getFileName()));
                             Util.sendFileList(ctx.channel(), login);
                             break;

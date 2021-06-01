@@ -1,7 +1,6 @@
 package Message;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -17,7 +16,7 @@ public class FileListMessage extends Message {
     public FileListMessage(Path path) {
         try {
             files = Files.list(path).map(Path::toFile).collect(Collectors.toList());
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
