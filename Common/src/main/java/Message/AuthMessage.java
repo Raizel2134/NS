@@ -16,5 +16,4 @@ public class AuthMessage extends Message {
     public String getPassword() {
         return password;
     }
-
 }

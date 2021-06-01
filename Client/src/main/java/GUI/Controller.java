@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 public class Controller implements Initializable {
     private Path ROOT = Paths.get(".").toAbsolutePath();
+    private static final int MAX_OBJ_SIZE = 1024 * 1024 * 100;
 
     @FXML
     private TableView<File> localList;
@@ -90,7 +91,11 @@ public class Controller implements Initializable {
 
     public void uploadToServer() {
         File file = localList.getSelectionModel().getSelectedItem();
-        clientConnection.sendMessage(new DataTransferMessage(Paths.get(file.getAbsolutePath())));
+        if (file.length() >= MAX_OBJ_SIZE){
+            showMessage(null, "Размер файла слишком большой!\nРекомендуемый размер файла менее 100мб");
+        } else {
+            clientConnection.sendMessage(new DataTransferMessage(Paths.get(file.getAbsolutePath())));
+        }
     }
 
     public void deleteFromLocalDisk() {
@@ -174,14 +179,14 @@ public class Controller implements Initializable {
         tcType.setCellValueFactory(param -> {
             String type = param.getValue().getName();
             int index = type.indexOf('.');
-            return new ReadOnlyObjectWrapper<>(index == -1? "" : "Файл " + type.substring(index));
+            return new ReadOnlyObjectWrapper<>(index == -1 ? "" : "Файл " + type.substring(index));
         });
         TableColumn<File, String> tcSize = new TableColumn<>("Размер");
         tcSize.setCellValueFactory(param -> {
             long size = param.getValue().length();
             String type = param.getValue().getName();
             int index = type.indexOf('.');
-            return new ReadOnlyObjectWrapper<>((index == -1? "[DIR]" : String.format("%,d bytes", size)));
+            return new ReadOnlyObjectWrapper<>((index == -1 ? "[DIR]" : String.format("%,d bytes", size)));
         });
         tcSize.setPrefWidth(200);
 
@@ -199,9 +204,9 @@ public class Controller implements Initializable {
         localList.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                if(event.getClickCount() == 2){
+                if (event.getClickCount() == 2) {
                     Path path = ROOT.resolve(localList.getSelectionModel().getSelectedItem().getName());
-                    if (Files.isDirectory(path)){
+                    if (Files.isDirectory(path)) {
                         updateList(path);
                     }
                 }

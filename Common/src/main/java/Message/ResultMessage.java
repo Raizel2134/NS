@@ -1,6 +1,7 @@
 package Message;
 
 public class ResultMessage {
+
     public enum Result {
         OK,
         FAILED
